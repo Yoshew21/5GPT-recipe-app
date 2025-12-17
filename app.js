@@ -2,6 +2,45 @@
 // Données: categories, recipes
 // Images: data URL base64
 
+// ===== THEME MANAGEMENT =====
+const THEME_KEY = "recipe_app_theme";
+
+function getStoredTheme() {
+  return localStorage.getItem(THEME_KEY) || "light";
+}
+
+function setStoredTheme(theme) {
+  localStorage.setItem(THEME_KEY, theme);
+}
+
+function applyTheme(theme) {
+  if (theme === "dark") {
+    document.documentElement.setAttribute("data-theme", "dark");
+  } else {
+    document.documentElement.removeAttribute("data-theme");
+  }
+  updateThemeIcon(theme);
+}
+
+function updateThemeIcon(theme) {
+  const icon = document.getElementById("themeIcon");
+  if (icon) {
+    icon.textContent = theme === "dark" ? "🌙" : "☀️";
+  }
+}
+
+function toggleTheme() {
+  const currentTheme = getStoredTheme();
+  const newTheme = currentTheme === "light" ? "dark" : "light";
+  setStoredTheme(newTheme);
+  applyTheme(newTheme);
+}
+
+// Initialize theme on load
+applyTheme(getStoredTheme());
+
+// ===== APP LOGIC =====
+
 const DB_NAME = "recipe_app_db";
 const DB_VERSION = 1;
 
@@ -591,6 +630,12 @@ async function fileToDataUrl(file) {
 // --- Events
 
 function bindEvents() {
+  // Theme toggle
+  const themeToggleBtn = $("#themeToggle");
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener("click", toggleTheme);
+  }
+
   // nav
   for (const btn of navButtons) {
     btn.addEventListener("click", async () => {
