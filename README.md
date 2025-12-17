@@ -7,6 +7,16 @@ Application web single-page (HTML/CSS/JS) pour gérer des recettes :
 - Photos (upload + preview) stockées en base64
 - Persistance via **IndexedDB**
 - Export / Import JSON
+- **Mode clair/sombre** avec toggle et persistance
+
+## Thème
+
+L'application propose deux thèmes :
+- **Mode clair** (par défaut) : design sobre et moderne avec palette pastel légère
+- **Mode sombre** : couleurs douces et apaisantes pour une utilisation en faible luminosité
+
+### Changer de thème
+Un bouton de basculement (☀️/🌙) est disponible dans la barre de navigation en haut à droite. Votre préférence est automatiquement sauvegardée et restaurée à chaque visite.
 
 ## Lancer en local
 
