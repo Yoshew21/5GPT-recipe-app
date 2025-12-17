@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gestion de Recettes</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">🍲</div>
+      <div>
+        <div class="brand__title">Recettes</div>
+        <div class="brand__subtitle">Galerie • Catégories • Sauvegarde</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <button class="nav__btn" data-route="home" id="navHome">Recettes</button>
+      <button class="nav__btn" data-route="new" id="navNew">Nouvelle recette</button>
+      <button class="nav__btn" data-route="categories" id="navCategories">Catégories</button>
+      <button class="nav__btn" data-route="backup" id="navBackup">Export/Import</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- HOME -->
+    <section id="view-home" class="view">
+      <div class="toolbar">
+        <div class="field">
+          <label for="searchInput">Recherche</label>
+          <input id="searchInput" type="search" placeholder="Nom de recette…" autocomplete="off" />
+        </div>
+
+        <div class="field">
+          <label for="categoryFilter">Catégorie</label>
+          <select id="categoryFilter"></select>
+        </div>
+
+        <div class="toolbar__right">
+          <button class="btn btn--primary" id="createRecipeBtn">+ Ajouter</button>
+        </div>
+      </div>
+
+      <div id="recipesGrid" class="grid"></div>
+
+      <div id="emptyState" class="empty">
+        <h2>Aucune recette</h2>
+        <p>Crée ta première recette pour commencer.</p>
+        <button class="btn btn--primary" id="emptyCreateBtn">Créer une recette</button>
+      </div>
+    </section>
+
+    <!-- DETAIL -->
+    <section id="view-detail" class="view">
+      <div class="viewhead">
+        <button class="btn btn--ghost" id="backToListBtn">← Retour</button>
+        <div class="viewhead__actions">
+          <button class="btn" id="editRecipeBtn">Modifier</button>
+          <button class="btn btn--danger" id="deleteRecipeBtn">Supprimer</button>
+        </div>
+      </div>
+
+      <article id="detailCard" class="detail"></article>
+    </section>
+
+    <!-- FORM -->
+    <section id="view-form" class="view">
+      <div class="viewhead">
+        <button class="btn btn--ghost" id="cancelFormBtn">← Annuler</button>
+        <div class="viewhead__title">
+          <h1 id="formTitle">Nouvelle recette</h1>
+          <p class="muted" id="formSubtitle">Tous les champs peuvent être modifiés plus tard.</p>
+        </div>
+      </div>
+
+      <form id="recipeForm" class="card form">
+        <input type="hidden" id="recipeId" />
+
+        <div class="form__grid">
+          <div class="field col-8">
+            <label for="name">Nom *</label>
+            <input id="name" required maxlength="120" placeholder="Ex: Tarte aux pommes" />
+          </div>
+
+          <div class="field col-4">
+            <label for="difficulty">Difficulté</label>
+            <select id="difficulty">
+              <option value="facile">Facile</option>
+              <option value="moyen">Moyen</option>
+              <option value="difficile">Difficile</option>
+            </select>
+          </div>
+
+          <div class="field col-4">
+            <label for="prepTime">Préparation (min)</label>
+            <input id="prepTime" type="number" min="0" step="1" value="0" />
+          </div>
+
+          <div class="field col-4">
+            <label for="cookTime">Cuisson (min)</label>
+            <input id="cookTime" type="number" min="0" step="1" value="0" />
+          </div>
+
+          <div class="field col-4">
+            <label for="servings">Portions</label>
+            <input id="servings" type="number" min="1" step="1" value="2" />
+          </div>
+
+          <div class="field col-6">
+            <label for="category">Catégorie</label>
+            <select id="category"></select>
+            <small class="hint">Gère les catégories dans l’onglet “Catégories”.</small>
+          </div>
+
+          <div class="field col-6">
+            <label for="photo">Photo</label>
+            <input id="photo" type="file" accept="image/*" />
+            <small class="hint">L’image est stockée en base64 (offline).</small>
+          </div>
+
+          <div class="field col-12">
+            <div class="photoPreview" id="photoPreviewWrap">
+              <img id="photoPreview" alt="Prévisualisation" />
+              <div class="photoPreview__empty" id="photoPreviewEmpty">Aperçu de la photo</div>
+              <button type="button" class="btn btn--small btn--danger photoPreview__remove" id="removePhotoBtn">Retirer</button>
+            </div>
+          </div>
+
+          <div class="field col-12">
+            <label for="description">Description / Notes</label>
+            <textarea id="description" rows="3" placeholder="Astuces, variations, notes…"></textarea>
+          </div>
+
+          <div class="field col-12">
+            <div class="rowbetween">
+              <label>Ingrédients</label>
+              <button type="button" class="btn btn--small" id="addIngredientBtn">+ Ajouter un ingrédient</button>
+            </div>
+            <div id="ingredientsList" class="ingredients"></div>
+            <small class="hint">Nom + quantité + unité (ex: 200 g).</small>
+          </div>
+
+          <div class="field col-12">
+            <label for="instructions">Instructions / Étapes</label>
+            <textarea id="instructions" rows="7" placeholder="1) …&#10;2) …"></textarea>
+          </div>
+        </div>
+
+        <div class="form__actions">
+          <button type="submit" class="btn btn--primary" id="saveRecipeBtn">Enregistrer</button>
+          <button type="button" class="btn" id="saveAndViewBtn">Enregistrer & voir</button>
+        </div>
+
+        <p class="muted tiny" id="timestamps"></p>
+      </form>
+    </section>
+
+    <!-- CATEGORIES -->
+    <section id="view-categories" class="view">
+      <div class="viewhead">
+        <div class="viewhead__title">
+          <h1>Catégories</h1>
+          <p class="muted">Crée, renomme et supprime des catégories.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <form id="categoryCreateForm" class="row">
+          <div class="field grow">
+            <label for="newCategoryName">Nouvelle catégorie</label>
+            <input id="newCategoryName" placeholder="Ex: Desserts" maxlength="40" />
+          </div>
+          <div class="field">
+            <label class="srOnly">Action</label>
+            <button class="btn btn--primary" type="submit">Ajouter</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2 class="h2">Liste</h2>
+        <div id="categoriesList" class="cats"></div>
+        <p class="muted tiny">La suppression est bloquée si des recettes utilisent la catégorie.</p>
+      </div>
+    </section>
+
+    <!-- BACKUP -->
+    <section id="view-backup" class="view">
+      <div class="viewhead">
+        <div class="viewhead__title">
+          <h1>Export / Import</h1>
+          <p class="muted">Sauvegarde tes recettes et catégories en JSON.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row wrap gap">
+          <button class="btn btn--primary" id="exportBtn">Exporter JSON</button>
+          <button class="btn" id="resetBtn">Réinitialiser toutes les données</button>
+        </div>
+        <p class="muted tiny">L’export contient aussi les images (base64), le fichier peut donc être volumineux.</p>
+      </div>
+
+      <div class="card">
+        <h2 class="h2">Importer</h2>
+        <div class="field">
+          <label for="importFile">Fichier JSON</label>
+          <input id="importFile" type="file" accept="application/json" />
+        </div>
+        <div class="row wrap gap">
+          <button class="btn btn--primary" id="importBtn">Importer</button>
+          <label class="row gap tiny muted"><input type="checkbox" id="importMerge" checked /> Fusionner (sinon remplacer)</label>
+        </div>
+        <pre class="code" id="importStatus" aria-live="polite"></pre>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span class="muted">SPA • IndexedDB • Offline</span>
+  </footer>
+
+  <dialog id="confirmDialog">
+    <form method="dialog" class="dialog">
+      <h3 id="confirmTitle">Confirmer</h3>
+      <p id="confirmMessage" class="muted">Êtes-vous sûr ?</p>
+      <div class="dialog__actions">
+        <button value="cancel" class="btn">Annuler</button>
+        <button value="confirm" class="btn btn--danger" id="confirmOkBtn">Confirmer</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
